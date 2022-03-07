@@ -82,9 +82,9 @@ Eigen::Matrix4d ICP(PointCloudT::Ptr target, PointCloudT::Ptr source, Pose prior
 }
 
 /**
- * Implement Normal Distribution Transform algorithm. This matches each source cloud point to its closest target (prior) cloud point
- * and returns the transformation matrix for aligning prior pose into current pose
+ * Implement Normal Distribution Transform algorithm. This generates a normal (Gaussian) probability distribution for each point and maximizes the sum of the distributions
  *
+ * @param target set of prior points
  * @param source set of current points
  * @param startingPose initial pose where we measured prior points
  * @param interations iterations
