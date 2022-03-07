@@ -52,6 +52,8 @@ vector<ControlState> cs;
  */
 Eigen::Matrix4d ICP(PointCloudT::Ptr target, PointCloudT::Ptr source, Pose prior_pose, int iterations)
 {
+    pcl::console::TicToc time;
+    time.tic();
     // Initialize transformation matrix as Identity Matrix as default return value
     Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity();
 
@@ -59,9 +61,6 @@ Eigen::Matrix4d ICP(PointCloudT::Ptr target, PointCloudT::Ptr source, Pose prior
     Eigen::Matrix4d prior_transform = transform3D(prior_pose.rotation.yaw, prior_pose.rotation.pitch, prior_pose.rotation.roll, prior_pose.position.x, prior_pose.position.y, prior_pose.position.z);
     PointCloudT::Ptr aligned_source(new PointCloudT);
     pcl::transformPointCloud(*source, *aligned_source, prior_transform);
-
-    pcl::console::TicToc time;
-    time.tic();
 
     pcl::IterativeClosestPoint<PointT, PointT> icp;
     icp.setMaximumIterations(iterations);
@@ -302,6 +301,7 @@ int main()
             pcl::VoxelGrid<PointT> vg;
             vg.setInputCloud(scanCloud);
             vg.setLeafSize(0.5f, 0.5f, 0.5f); // resolution for Voxel dimensions
+            typename pcl::PointCloud<PointT>::Ptr cloudFiltered(new pcl::PointCloud<PointT>);
             vg.filter(*cloudFiltered);
 
             // TODO: Find pose transform by using ICP or NDT matching
@@ -316,6 +316,7 @@ int main()
             // TODO: Change `scanCloud` below to your transformed scan
 
             // Transform scanCloud
+            typename pcl::PointCloud<PointT>::Ptr scanCloud(new pcl::PointCloud<PointT>);
             pcl::transformPointCloud(*cloudFiltered, *scanCloud, transform_matrix);
 
             renderPointCloud(viewer, scanCloud, "scan", Color(1, 0, 0));
